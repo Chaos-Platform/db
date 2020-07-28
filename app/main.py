@@ -315,7 +315,7 @@ def update_experiment(id):
 
 def get_one_object(collection,identifier_key,identifier_value,expected_returned_keys):
     # Easyiest way to use a string as a property of an object
-    objects = eval("mongo.db.{}".format(collection))
+    objects = eval(f"mongo.db.{collection}")
     query = objects.find_one({identifier_key : identifier_value})
     if query:
         output = {}
@@ -328,7 +328,7 @@ def get_one_object(collection,identifier_key,identifier_value,expected_returned_
 
 def get_all_objects(collection,expected_returned_keys):
     # Easyiest way to use a string as a property of an object
-    objects = eval("mongo.db.{}".format(collection))
+    objects = eval(f"mongo.db.{collection}")
     output = []
     for query in objects.find():
         found_object = {}
@@ -340,7 +340,7 @@ def get_all_objects(collection,expected_returned_keys):
 
 
 def update_object_in_db(collection, json_object, identifier_key, identifier_value):
-    objects = eval("mongo.db.{}".format(collection))
+    objects = eval(f"mongo.db.{collection}")
     if objects.count_documents({identifier_key: identifier_value}) > 0:
         objects.update_one({identifier_key: identifier_value}, {'$set' : json_object} )
         return  "updated", 200
@@ -351,7 +351,7 @@ def update_object_in_db(collection, json_object, identifier_key, identifier_valu
 def add_object_to_db(collection,json_object,expected_returned_keys,identifier_key,identifier_value,default_request_values):
 
     # Easyiest way to use a string as a property of an object
-    objects = eval("mongo.db.{}".format(collection))
+    objects = eval(f"mongo.db.{collection}")
 
     # Fill out default values if not in sent object
     json_object = parse_json_object(json_object, default_request_values)
