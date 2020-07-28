@@ -11,7 +11,6 @@ mongodb_ip = os.environ.get("DB_IP", "chaos.mongodb.openshift")
 mongodb_port = os.environ.get("DB_PORT", "8080")
 db_name = os.environ.get("DB_NAME", "chaos")
 server_port = int(os.environ.get("SERVER_PORT", 5001))
-mongodb_ip = "52.255.160.180"
 
 mongodb_uri = "mongodb://{}:{}/{}".format(mongodb_ip,mongodb_port,db_name)
 app.config['MONGODB_NAME'] = db_name
@@ -285,7 +284,7 @@ def add_experiment():
         identifier_value = json_object["id"]
     except KeyError:
         return "id is a required parameter", 400
-    default_request_values = {'successful' : False }
+    default_request_values = {'successful' : False, 'end_time' : "" }
 
     output = add_object_to_db(collection, json_object, expected_returned_keys, identifier_key, identifier_value,default_request_values)
     return output
@@ -307,7 +306,6 @@ def get_one_experiment(id):
 def update_experiment(id):
     collection = "experiments"
     json_object = request.get_json()
-    print(request.get_json())
     identifier_key = "id"
     try:
         identifier_value = id
@@ -324,9 +322,9 @@ def get_one_object(collection,identifier_key,identifier_value,expected_returned_
         output = {}
         for key in expected_returned_keys :
             output[key] = query[key]
+        return jsonify(output), 200
     else :
-        output = "object not found"
-    return jsonify(output)
+        return "object not found", 404
 
 
 def get_all_objects(collection,expected_returned_keys):
@@ -339,13 +337,16 @@ def get_all_objects(collection,expected_returned_keys):
             found_object[key] = query[key]
         output.append(found_object)
 
-    return jsonify({'result' : output})
+    return jsonify(output), 200
 
 
 def update_object_in_db(collection, json_object, identifier_key, identifier_value):
     objects = eval("mongo.db.{}".format(collection))
-    output = objects.update({identifier_key: identifier_value}, {'$set' : json_object} )
-    return  output
+    if objects.count_documents({identifier_key: identifier_value}) > 0:
+        objects.update_one({identifier_key: identifier_value}, {'$set' : json_object} )
+        return  "updated", 200
+    else:
+        return "no such object", 400
 
 
 def add_object_to_db(collection,json_object,expected_returned_keys,identifier_key,identifier_value,default_request_values):
@@ -357,19 +358,18 @@ def add_object_to_db(collection,json_object,expected_returned_keys,identifier_ke
     json_object = parse_json_object(json_object, default_request_values)
     try:
         if objects.count_documents({identifier_key: identifier_value}) > 0:
-           return {"result" : "object with the same identifier already exists"}, 400
+           return "object with the same identifier already exists" , 400
         else:
             new_object_id = objects.insert(json_object, check_keys=False)
             query = objects.find_one({'_id': new_object_id})
     except (errors.WriteError, TypeError) as E:
-        print(E)
-        return jsonify({'result': 'the object failed the validation schema'}), 400
+        return jsonify('the object failed the validation schema'), 400
     output = {}
 
     for expected_key in expected_returned_keys:
       output[expected_key] = query[expected_key]
 
-    return jsonify({'result': output})
+    return jsonify(output), 200
 
 
 def parse_json_object(json_object,default_values_dict):
