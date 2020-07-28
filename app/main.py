@@ -7,12 +7,11 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-mongodb_ip = os.environ.get("DB_IP", "chaos.mongodb.openshift")
-mongodb_port = os.environ.get("DB_PORT", "8080")
+mongodb_endpoint = os.environ.get("DB_ENDPOINT", "chaos.mongodb.openshift")
 db_name = os.environ.get("DB_NAME", "chaos")
-server_port = int(os.environ.get("SERVER_PORT", 5001))
+listen_port = int(os.environ.get("LISTEN_PORT", 5001))
 
-mongodb_uri = "mongodb://{}:{}/{}".format(mongodb_ip,mongodb_port,db_name)
+mongodb_uri = f"mongodb://{mongodb_endpoint}/{db_name}"
 app.config['MONGODB_NAME'] = db_name
 app.config['MONGO_URI'] = mongodb_uri
 
@@ -381,4 +380,4 @@ def parse_json_object(json_object,default_values_dict):
     return  json_object
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0' , port=server_port)
+    app.run(host='0.0.0.0' , port=listen_port)
