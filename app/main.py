@@ -21,7 +21,7 @@ mongo   = PyMongo(app)
 @app.route('/server',methods=['GET'])
 def get_all_servers():
     collection = "servers"
-    expected_returned_keys = ["dns","active","groups"]
+    expected_returned_keys = ["dns","active","groups",'os_type']
     output = get_all_objects(collection, expected_returned_keys)
     return output
 
@@ -31,7 +31,7 @@ def get_one_server(dns):
     collection = "servers"
     identifier_key = "dns"
     identifier_value = dns
-    expected_returned_keys = ["dns", "active","groups"]
+    expected_returned_keys = ["dns", "active","groups",'os_type']
     output = get_one_object(collection,identifier_key,identifier_value,expected_returned_keys)
     return output
 
@@ -380,4 +380,4 @@ def parse_json_object(json_object,default_values_dict):
     return  json_object
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=listen_port, debug=True)
+    app.run(host='0.0.0.0', port=listen_port)

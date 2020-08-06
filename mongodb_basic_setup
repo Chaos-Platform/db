@@ -2,7 +2,7 @@
 mongod &
 
 
-mongo --eval 'db.createCollection("servers", { validator : { $jsonSchema : { bsonType : "object", required : ["dns","groups","active"], properties : {  dns : { bsonType : "string", description : "Must be a string and is required"  }, ip : { bsonType: "string", description: "Must be a string"  }, groups: { bsonType: "array", description: "must be an array and is required" }, last_fault: { bsonType: "string", description : "must be a string " }, active : { bsonType : "bool", description: "must be boolean and is required" } } } }, validationAction : "error" } )' chaos
+mongo --eval 'db.createCollection("servers", { validator : { $jsonSchema : { bsonType : "object", required : ["dns","groups","active","os_type"], properties : {  dns : { bsonType : "string", description : "Must be a string and is required"  },os_type : { bsonType : "string", description : "Must be a string and is required"  }, ip : { bsonType: "string", description: "Must be a string"  }, groups: { bsonType: "array", description: "must be an array and is required" }, last_fault: { bsonType: "string", description : "must be a string " }, active : { bsonType : "bool", description: "must be boolean and is required" } } } }, validationAction : "error" } )' chaos
 
 mongo --eval 'db.createCollection("groups", { validator : { $jsonSchema : { bsonType : "object", required : ["name","active"], properties : {  name : { bsonType : "string", description : "Must be a string and is required"  },last_fault: { bsonType: "string", description : "must be a string " }, members: { bsonType: "array", description: "must be an array" },  active : { bsonType : "bool", description: "must be boolean and is required" } } } }, validationAction : "error" } )' chaos
 
@@ -19,9 +19,9 @@ mongo --eval 'db.createCollection("faults", { validator : { $jsonSchema : { bson
 
 mongo --eval 'db.createCollection("logs", { validator : { $jsonSchema : { bsonType : "object", required : ["name","date","logs","successful"], properties : {  name : { bsonType : "string", description : "Must be a string and is required"  }, "date" : { bsonType : "string", description : "Must be a string and is required"  }, logs : { bsonType : "object", description: "must be a dcitionary and is required" }, successful : { bsonType : "bool", description: "must be boolean and is required" } } } }, validationAction : "error" } )' chaos
 
-mongo --eval 'db.servers.insert({dns : "test_server2", groups : ["linux_servers"] , active : true, last_fault : "0012150000"})' chaos
+mongo --eval 'db.servers.insert({dns : "test_server2", groups : ["linux_servers"] , active : true, last_fault : "0012150000", os_type : "linux"})' chaos
 
-mongo --eval 'db.servers.insert({dns : "test_server1", groups : ["linux_servers","web_servers"], active : false})' chaos
+mongo --eval 'db.servers.insert({dns : "test_server1", groups : ["linux_servers","web_servers"], active : false,os_type : "linux"})' chaos
 
 mongo --eval 'db.groups.insert({name : "web_servers", active: true})' chaos
 
