@@ -231,7 +231,7 @@ def add_fault():
 def add_log():
     collection = "logs"
     json_object = request.get_json()
-    expected_returned_keys = ["name", 'logs' , "date", "successful" ]
+    expected_returned_keys = ["name", 'logs' , "date", "successful", "victim" ]
     identifier_key = "name"
     try:
         identifier_value = json_object["name"]
@@ -246,7 +246,7 @@ def add_log():
 @app.route('/log', methods=['GET'])
 def get_all_logs():
     collection = "logs"
-    expected_returned_keys = ["name", 'logs' , "date", "successful" ]
+    expected_returned_keys = ["name", 'logs' , "date", "successful", "victim"  ]
     output = get_all_objects(collection, expected_returned_keys)
     return output
 
@@ -256,7 +256,7 @@ def get_one_log(name):
     collection = "logs"
     identifier_key = "name"
     identifier_value = name
-    expected_returned_keys = ["name", 'logs' , "date", "successful" ]
+    expected_returned_keys = ["name", 'logs' , "date", "successful", "victim"  ]
     output = get_one_object(collection, identifier_key, identifier_value, expected_returned_keys)
     return output
 
