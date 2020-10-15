@@ -1,4 +1,16 @@
 from mongoengine import *
+from enum import Enum
+
+class Collections(str, Enum):
+    servers = "servers"
+    groups = "groups"
+    logs = "logs"
+    probes =  "probes"
+    methods = "methods"
+    rollbacks = "rollbacks"
+    experiments = "experiments"
+
+
 class Log(Document):
     meta = {'collection': 'logs'}
     name = StringField()
@@ -7,13 +19,18 @@ class Log(Document):
     date = StringField()
     victim = StringField()
     owner = StringField(required=True)
+
+    @staticmethod
+    def get_identifier():
+        return 'name'
+
     def to_dict(self):
         return {
             "name": self.name,
             "logs": self.logs,
             "successful": self.successful,
             "date" : self.date,
-            "vicim" : self.victim,
+            "victim" : self.victim,
             "owner": self.owner
         }
 
@@ -25,6 +42,11 @@ class Server(Document):
     groups = ListField(StringField(),default=[])
     os_type = StringField(required=True)
     last_fault = StringField()
+
+    @staticmethod
+    def get_identifier():
+        return 'dns'
+
     def to_dict(self):
         return {
             "dns": self.dns,
@@ -40,6 +62,11 @@ class Group(Document):
     active = BooleanField(default=False)
     last_fault = StringField()
     owner = StringField(required=True)
+
+    @staticmethod
+    def get_identifier():
+        return 'name'
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -58,6 +85,11 @@ class Script(Document):
     language = StringField()
     content = StringField()
     targets = DictField()
+
+    @staticmethod
+    def get_identifier():
+        return 'name'
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -68,25 +100,9 @@ class Script(Document):
             "path" : self.path
         }
 
-class Probe(Document):
+##  Fix this plz
+class Probe(Script):
     meta = {'collection': 'probes'}
-    name = StringField(max_length=200, required=True)
-    active = BooleanField(default=False)
-    last_fault = StringField()
-    owner = StringField(required=True)
-    path = StringField(required=True)
-    language = StringField()
-    content = StringField()
-    targets = DictField()
-    def to_dict(self):
-        return {
-            "name": self.name,
-            "active": self.active,
-            "last_fault": self.last_fault,
-            "owner" : self.owner,
-            "targets" : self.targets,
-            "path" : self.path
-        }
 
 
 class Method(Document):
@@ -99,6 +115,11 @@ class Method(Document):
     language = StringField()
     content = StringField()
     targets = DictField()
+
+    @staticmethod
+    def get_identifier():
+        return 'name'
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -119,6 +140,11 @@ class Rollback(Document):
     language = StringField()
     content = StringField()
     targets = DictField()
+
+    @staticmethod
+    def get_identifier():
+        return 'name'
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -128,4 +154,3 @@ class Rollback(Document):
             "targets" : self.targets,
             "path" : self.path
         }
-
